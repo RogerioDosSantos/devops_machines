@@ -1,0 +1,14 @@
+
+FROM conanio/gcc49-x86
+MAINTAINER Roger Santos (https://github.com/RogerioDosSantos)
+
+ENV PYTHONWARNINGS="ignore:Unverified HTTPS request"
+
+RUN sudo apt-get update \ 
+    && sudo apt-get install docker.io -y \
+    && mkdir -p /home/conan/.conan/data \
+    && chown -R 1000 /home/conan/.conan/data \
+    && conan remote remove conan-center \
+    && conan remote add conan-center https://conan.bintray.com false \
+    && conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan false
+
