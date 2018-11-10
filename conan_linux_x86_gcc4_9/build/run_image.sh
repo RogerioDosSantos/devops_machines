@@ -30,6 +30,6 @@ main::GetDockerClientConfiguration()
   echo "${docker_socker_config}"
 }
 
-docker run --rm -it -d --name conan_linux_x64_gcc4_9 -v builder_linux_x86_data:/home/conan/.conan/data $(main::GetProxyConfiguration) $(main::GetDockerClientConfiguration) rogersantos/conan_linux_x64_gcc4_9 /bin/bash
+docker run --rm -it -d --name conan_linux_x64_gcc4_9 -v builder_linux_x86_data:/home/conan/.conan/data -v /var/run/docker.sock:/var/run/docker.sock $(main::GetProxyConfiguration) $(main::GetDockerClientConfiguration) rogersantos/conan_linux_x64_gcc4_9 /bin/bash
 
 echo "conan_linux_x64_gcc4_9"

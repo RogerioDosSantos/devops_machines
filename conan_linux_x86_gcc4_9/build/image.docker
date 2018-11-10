@@ -4,7 +4,26 @@ MAINTAINER Roger Santos (https://github.com/RogerioDosSantos)
 
 ENV PYTHONWARNINGS="ignore:Unverified HTTPS request"
 
-RUN sudo apt-get update \ 
+# Install Docker Client
+RUN echo "*** Install Docker Client - Start" \
+    && sudo apt-get update \
+    && sudo dpkg --add-architecture amd64 \
+    && sudo apt-get update \
+    && sudo apt-get -f install \
+    && mkdir -p /home/conan/temp \
+    && wget -P /home/conan/temp https://download.docker.com/linux/ubuntu/dists/trusty/pool/stable/amd64/docker-ce_18.06.1~ce~3-0~ubuntu_amd64.deb \
+    && sudo dpkg -i /home/conan/temp/docker-ce_18.06.1~ce~3-0~ubuntu_amd64.deb || true \
+    && sudo apt-get -f -y install \
+    && sudo dpkg -i /home/conan/temp/docker-ce_18.06.1~ce~3-0~ubuntu_amd64.deb \
+    && rm -rf /home/conan/temp \
+    && sudo mv /usr/bin/docker /usr/bin/docker_program \
+    && echo '#!/usr/bin/env bash' | sudo tee -a /usr/bin/docker \
+    && echo 'sudo docker_program "$@"' | sudo tee -a /usr/bin/docker \
+    && sudo chmod +x /usr/bin/docker \
+    && echo "*** Install Docker Client - END"
+
+# Prepade Conan folders and repositories
+RUN sudo apt-get update \
     && sudo apt-get install docker.io -y \
     && mkdir -p /home/conan/.conan/data \
     && chown -R 1000 /home/conan/.conan/data \
