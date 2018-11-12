@@ -1,25 +1,12 @@
-FROM jenkins/jenkins:lts
+FROM jenkinsci/blueocean:1.9.0
 MAINTAINER Roger Santos (https://github.com/RogerioDosSantos)
 
 USER root
 
 # Install Docker Client
 RUN echo "*** Install Docker Client - Start" \
-    && apt-get update \
-    && apt-get install sudo -y \
-    && usermod -aG sudo jenkins \
-    && echo '%sudo ALL=(ALL:ALL) ALL' | EDITOR='tee -a' visudo \
-    && echo 'jenkins ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo \
-    && mkdir -p /tmp/docker \
-    && wget -P /tmp/docker https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_18.06.1~ce~3-0~debian_amd64.deb \
-    && dpkg -i /tmp/docker/docker-ce_18.06.1~ce~3-0~debian_amd64.deb || true \
-    && apt-get -f -y install \
-    && dpkg -i /tmp/docker/docker-ce_18.06.1~ce~3-0~debian_amd64.deb \
-    && rm -rf /tmp/docker \
-    && mv /usr/bin/docker /usr/bin/docker_program \
-    && echo '#!/usr/bin/env bash' | tee -a /usr/bin/docker \
-    && echo 'sudo docker_program "$@"' | tee -a /usr/bin/docker \
-    && chmod +x /usr/bin/docker \
+		&& addgroup jenkins docker \
+		&& addgroup jenkins root \
     && echo "*** Install Docker Client - END"
 
 USER jenkins
