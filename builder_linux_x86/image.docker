@@ -1,0 +1,42 @@
+# Docker Image for Build Server (x86)
+
+FROM conanio/gcc49-x86
+MAINTAINER Roger Santos (https://github.com/RogerioDosSantos)
+
+ENV PYTHONWARNINGS="ignore:Unverified HTTPS request"
+
+# Install Docker Client
+RUN echo "*** Install Docker Client - Start" \
+    && sudo apt-get update \
+    && sudo dpkg --add-architecture amd64 \
+    && sudo apt-get update \
+    && sudo apt-get -f install \
+    && mkdir -p /home/conan/temp \
+    && wget -P /home/conan/temp https://download.docker.com/linux/ubuntu/dists/trusty/pool/stable/amd64/docker-ce_18.06.1~ce~3-0~ubuntu_amd64.deb \
+    && sudo dpkg -i /home/conan/temp/docker-ce_18.06.1~ce~3-0~ubuntu_amd64.deb || true \
+    && sudo apt-get -f -y install \
+    && sudo dpkg -i /home/conan/temp/docker-ce_18.06.1~ce~3-0~ubuntu_amd64.deb \
+    && rm -rf /home/conan/temp \
+    && sudo mv /usr/bin/docker /usr/bin/docker_program \
+    && echo '#!/usr/bin/env bash' | sudo tee -a /usr/bin/docker \
+    && echo 'sudo docker_program "$@"' | sudo tee -a /usr/bin/docker \
+    && sudo chmod +x /usr/bin/docker \
+    && echo "*** Install Docker Client - END"
+
+# Install Additional Tools
+RUN echo "*** Install Additional Tools - Start" \
+    && sudo apt-get update \
+    && sudo apt-get -y install \
+      unzip \
+    && echo "*** Install Additional Tools - END"
+
+# Prepare Conan folders and repositories
+RUN echo "*** Prepade Conan folders and repositories - Start" \
+    && sudo apt-get update \
+    && mkdir -p /home/conan/.conan/data \
+    && chown -R 1000 /home/conan/.conan/data \
+    && conan remote remove conan-center \
+    && conan remote add conan-center https://conan.bintray.com false \
+    && conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan false \
+    && echo "*** Prepade Conan folders and repositories - END"
+
