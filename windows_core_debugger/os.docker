@@ -1,0 +1,9 @@
+# Operational System and programs
+
+FROM microsoft/nanoserver
+LABEL maintainer="Roger Santos (https://github.com/RogerioDosSantos)"
+
+# Windows 10 x64 Debuggers
+COPY ./stage/windows_10_x64_debuggers/ /workspace/debuggers/x64
+
+
