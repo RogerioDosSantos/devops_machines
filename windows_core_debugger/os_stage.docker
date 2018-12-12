@@ -1,0 +1,17 @@
+# Build Staging 
+
+FROM microsoft/windowsservercore:1803 as build-staging
+WORKDIR /workspace
+
+# Visual Studio (2017) Remote Tools
+ADD https://github.com/RogerioDosSantos/devops_machines/releases/download/dependencies/remote_tools_vs2017_15.0.28307.53.exe /workspace/setups/remote_tools.exe
+RUN C:\workspace\setups\remote_tools.exe /quiet
+RUN powershell -Command $ErrorActionPreference = 'Stop' ; \
+    Start-Process C:\workspace\setups\remote_tools.exe -ArgumentList '/quiet' -Wait
+
+# Windows 10 Debuggers
+ADD https://github.com/RogerioDosSantos/devops_machines/releases/download/dependencies/windows_10_debuggers_10.1.17763.132.zip /workspace/setups/windows_10_debuggers.zip
+RUN powershell -Command $ErrorActionPreference = 'Stop' ; \
+    Expand-Archive 'C:\workspace\setups\windows_10_debuggers.zip' -DestinationPath 'C:\workspace\setups' ; \
+    Start-Process C:\workspace\setups\windows_10_debuggers\winsdksetup.exe -ArgumentList '/features OptionId.WindowsDesktopDebuggers /q' -Wait
+

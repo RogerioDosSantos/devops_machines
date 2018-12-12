@@ -1,0 +1,17 @@
+# Application
+
+FROM rogersantos/windows_core_debugger:os_windows
+
+# Build Arguments
+ARG maintainer="Roger Santos (https://github.com/RogerioDosSantos)"
+ARG uri="windows_core_debugger/1.0.0@rogersantos/windows_release"
+ARG docker_image="rogersantos/windows_core_debugger:windows"
+ARG flavor="Release"
+
+# Identification
+LABEL maintainer="${maintainer}"
+LABEL uri="${uri}"
+LABEL docker_image="${docker_image}"
+LABEL flavor="${flavor}"
+
+WORKDIR /workspace
