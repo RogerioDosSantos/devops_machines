@@ -1,0 +1,13 @@
+# Docker Client
+
+FROM rogersantos/docker_client_stage:windows as stage
+
+FROM microsoft/nanoserver:1803
+
+USER ContainerAdministrator
+
+COPY --from=stage ["/workspace/docker_client/docker", "/Program Files/docker"]
+COPY --from=stage ["/Windows/System32/netapi32.dll", "/Windows/System32/netapi32.dll"]
+RUN setx PATH "%PATH%;C:\Program Files\docker"
+
+

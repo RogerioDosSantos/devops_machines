@@ -1,0 +1,11 @@
+# Docker Client (Stage)
+
+FROM microsoft/windowsservercore:1803 as stage
+
+# Options
+ENV docker_url https://github.com/StefanScherer/docker-cli-builder/releases/download/18.09.0/docker.exe
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# Docker Client
+ADD "${docker_url}" /workspace/docker_client/docker/docker.exe
