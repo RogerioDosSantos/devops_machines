@@ -1,0 +1,15 @@
+# Conan Client (Stage)
+
+FROM microsoft/windowsservercore:1803 as stage
+
+# Options
+ENV python_url https://www.python.org/ftp/python/3.7.2/python-3.7.2-amd64.exe
+ENV pip_url https://bootstrap.pypa.io/get-pip.py 
+# ENV conan_url https://github.com/StefanScherer/docker-cli-builder/releases/download/18.09.0/docker.exe
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# Python
+ADD "${python_url}" /workspace/setup/python/python.exe
+ADD "${pip_url}" /workspace/setup/python/get-pip.py
+

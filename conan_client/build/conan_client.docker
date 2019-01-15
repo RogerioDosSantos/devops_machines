@@ -1,0 +1,47 @@
+# Conan Client
+
+FROM rogersantos/conan_client_stage:windows as stage
+
+FROM microsoft/windowsservercore:1803 as build
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# Python
+COPY --from=stage ["/workspace/setup/python/python.exe", "/workspace/setup/python/python.exe"]
+COPY --from=stage ["/workspace/setup/python/get-pip.py", "/workspace/setup/python/get-pip.py"]
+RUN Write-Host '*** Installing Python' ; \
+    Write-Host '- Configuring Security' ; \
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 ; \
+    Write-Host '- Installing (python.exe)' ; \
+    Start-Process C:/workspace/setup/python/python.exe -Wait \
+      -ArgumentList @( \
+        '/quiet', \
+        'InstallAllUsers=1', \
+        'TargetDir=C:\Python', \
+        'PrependPath=1', \
+        'Shortcuts=0', \
+        'Include_doc=0', \
+        'Include_pip=0', \
+        'Include_test=0' \
+      ) ; \
+    Write-Host '-- Updating Environment' ; \
+    $env:PATH = [Environment]::GetEnvironmentVariable('PATH', [EnvironmentVariableTarget]::Machine) ; \
+    Write-Host '-- Python Version' ; \
+    python --version ; \
+    Write-Host '- Installing (pip)' ; \
+    python C:\workspace\setup\python\get-pip.py --disable-pip-version-check --no-cache-dir 'pip==18.1' ; \
+    Write-Host '-- Pip Version' ; \
+    pip --version ; \
+    Write-Host '- Cleaning-up' ; \
+    Remove-Item C:\workspace\setup\ -Force -Recurse ; \
+    Write-Host '*** Installing Python - DONE' 
+
+# Conan Client
+RUN Write-Host '*** Installing Conan Client' ; \
+    Write-Host '- Installing using pip' ; \
+    pip install conan ; \
+    Write-Host '- Conan Version' ; \
+    conan -v ; \
+    Write-Host '*** Installing Conan Client - DONE' 
+
+ENTRYPOINT powershell
