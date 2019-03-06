@@ -1,0 +1,19 @@
+
+version: "3"
+
+volumes:
+  conan_repository_server_data:
+
+services:
+
+  conan_repository_server:
+    build:
+      context: ./
+      dockerfile: ./image.docker
+    image: "rogersantos/conan_repository_server:linux_latest"
+    stdin_open: true
+    tty: true
+    ports:
+      - "2001:8081"
+    volumes:
+      - "conan_repository_server_data:/var/opt/jfrog/artifactory"

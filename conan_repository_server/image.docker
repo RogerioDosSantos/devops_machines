@@ -1,4 +1,17 @@
+# Conan Repository Server
 
 FROM docker.bintray.io/jfrog/artifactory-cpp-ce:latest
 
+# Build Arguments
+ARG maintainer="Roger Santos (https://github.com/RogerioDosSantos)"
+ARG uri="conan_repository_server/0.0.1@rogersantos/linux"
+ARG docker_image="rogersantos/conan_repository_server:linux_latest"
+ARG flavor="Release"
+
+# Identification
+LABEL maintainer="${maintainer}"
+LABEL uri="${uri}"
+LABEL docker_image="${docker_image}"
+LABEL flavor="${flavor}"
+LABEL description="Conan Repository Server"
 
