@@ -1,27 +1,23 @@
 # Docker Image for Build Server (x86)
 
 FROM conanio/gcc49-x86
-MAINTAINER Roger Santos (https://github.com/RogerioDosSantos)
+
+USER root
+
+# Build Arguments
+ARG maintainer="Roger Santos (https://github.com/RogerioDosSantos)"
+ARG uri="builder/0.0.1@rogersantos/linux_x86_gcc6"
+ARG docker_image="rogersantos/builder:linux_x86_gcc6"
+ARG flavor="Release"
+
+# Identification
+LABEL maintainer="${maintainer}"
+LABEL uri="${uri}"
+LABEL docker_image="${docker_image}"
+LABEL flavor="${flavor}"
+LABEL description="Builder Linux x86 gcc6"
 
 ENV PYTHONWARNINGS="ignore:Unverified HTTPS request"
-
-# Install Docker Client
-RUN echo "*** Install Docker Client - Start" \
-    && sudo apt-get update \
-    && sudo dpkg --add-architecture amd64 \
-    && sudo apt-get update \
-    && sudo apt-get -f install \
-    && mkdir -p /home/conan/temp \
-    && wget -P /home/conan/temp https://download.docker.com/linux/ubuntu/dists/trusty/pool/stable/amd64/docker-ce_18.06.1~ce~3-0~ubuntu_amd64.deb \
-    && sudo dpkg -i /home/conan/temp/docker-ce_18.06.1~ce~3-0~ubuntu_amd64.deb || true \
-    && sudo apt-get -f -y install \
-    && sudo dpkg -i /home/conan/temp/docker-ce_18.06.1~ce~3-0~ubuntu_amd64.deb \
-    && rm -rf /home/conan/temp \
-    && sudo mv /usr/bin/docker /usr/bin/docker_program \
-    && echo '#!/usr/bin/env bash' | sudo tee -a /usr/bin/docker \
-    && echo 'sudo docker_program "$@"' | sudo tee -a /usr/bin/docker \
-    && sudo chmod +x /usr/bin/docker \
-    && echo "*** Install Docker Client - END"
 
 # Install Additional Tools
 RUN echo "*** Install Additional Tools - Start" \
@@ -39,4 +35,6 @@ RUN echo "*** Prepade Conan folders and repositories - Start" \
     && conan remote add conan-center https://conan.bintray.com false \
     && conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan false \
     && echo "*** Prepade Conan folders and repositories - END"
+
+USER conan
 

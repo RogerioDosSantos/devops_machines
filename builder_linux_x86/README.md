@@ -1,1 +1,1 @@
-# Conan Linux x64 gcc6
+# Builder Linux x86 gcc6

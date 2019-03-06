@@ -1,0 +1,16 @@
+
+version: "3"
+services:
+
+  builder:
+    build:
+      context: ./
+      dockerfile: ./image.docker
+    image: "rogersantos/builder:linux_x86_gcc6"
+    stdin_open: true
+    tty: true
+
+  # builder_latest:
+  #   extends: builder
+  #   image: "rogersantos/builder:linux_x86"
+      
