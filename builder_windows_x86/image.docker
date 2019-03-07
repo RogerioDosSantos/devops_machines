@@ -2,38 +2,101 @@
 
 # Docker Image for Build Server (x86)
 FROM microsoft/windowsservercore:1803
+# FROM microsoft/windowsservercore:ltsc2016
 
-ADD https://aka.ms/vs/15/release/vs_buildtools.exe C:\TEMP\buildtools.exe
+# Build Arguments
+ARG maintainer="Roger Santos (https://github.com/RogerioDosSantos)"
+ARG uri="builder/0.0.1@rogersantos/windows_dev"
+ARG docker_image="rogersantos/project_name:windows"
+ARG flavor="Release"
+ARG HTTP_PROXY=""
+ARG HTTPS_PROXY=""
+ARG NO_PROXY=""
 
-RUN C:\TEMP\buildtools.exe --quiet --wait --norestart --nocache `
-    --installPath C:\BuildTools `
-    --add Microsoft.VisualStudio.Workload.VCTools;includeRecommended  ` 
-    --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ` 
-    --add Microsoft.VisualStudio.Component.Windows10SDK.17134 `
-    --add Microsoft.VisualStudio.Component.Windows10SDK.16299.Desktop `
-    --add Microsoft.VisualStudio.Component.VC.140 ` 
-    --add Microsoft.VisualStudio.Component.VC.ATL ` 
-    --add Microsoft.VisualStudio.Component.VC.ATLMFC ` 
-    --add Microsoft.VisualStudio.Component.VC.CLI.Support ` 
-  || IF "%ERRORLEVEL%"=="3010" EXIT 0
-  
+# Identification
+LABEL maintainer="${maintainer}"
+LABEL uri="${uri}"
+LABEL docker_image="${docker_image}"
+LABEL flavor="${flavor}"
+LABEL description="EmbeddedView container"
+
 SHELL ["powershell.exe", "-ExecutionPolicy", "Bypass", "-Command"]
 
-ENV chocolateyUseWindowsCompression=false
+ENV chocolateyUseWindowsCompression=false `
+    PYTHONIOENCODING=UTF-8
 
-RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+# ## Proxy Certificates
+# # ADD https://github.com/RogerioDosSantos/devops_machines/releases/download/dependencies/zscale.crt C:\TEMP\zscale.crt
+# # RUN $ErrorActionPreference = 'Stop'; `
+# RUN echo '*** Installing Certificates' ; `
+#     echo ' - Proxy Configuration' ; `
+#     Get-ChildItem Env:HTTP_PROXY ; `
+#     Get-ChildItem Env:HTTPS_PROXY ; `
+#     Get-ChildItem Env:NO_PROXY ; `
+#     # echo ' - ZScale' ; `
+#     # Import-Certificate -FilePath C:\TEMP\zscale.crt -CertStoreLocation Cert:\LocalMachine\Root -Verbose ; `
+#     # Import-Certificate -FilePath C:\TEMP\zscale.crt -CertStoreLocation Cert:\CurrentUser\Root -Verbose ; `
+#     echo '*** Installing Certificates - DONE' ; 
 
-RUN choco install --yes python3 --params '"/InstallDir:C:\tools\python3"'
+RUN $ErrorActionPreference = 'Stop'; `
+    echo '*** Installing programs' ; `
+    echo ' - Chocolatey' ; `
+    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); `
+    echo ' - Git' ; `
+    choco install --no-progress --yes git --version=2.19.0 --params '"/InstallDir:C:\tools\git"'; `
+    echo ' - CMake' ; `
+    choco install --no-progress --yes cmake --version=3.12.2 --params '"/InstallDir:C:\tools\cmake"' --installargs 'ADD_CMAKE_TO_PATH=""System""'; `
+    echo ' - Python 3' ; `
+    $env:Path += '";C:\tools\python3;C:\tools\python3\Scripts"'; `
+    choco install --no-progress --yes python3 --version=3.7.0 --params '"/InstallDir:C:\tools\python3"' ; `
+    echo ' - Visual Studio Build Tools' ; `
+    choco install --no-progress --yes visualstudio2017buildtools --version=15.9.2.0 ; `
+    choco install --no-progress --yes visualstudio2017-workload-vctools --version=1.3.1 ; `
+    choco install --no-progress --yes --execution-timeout=0 visualstudio2017-workload-manageddesktop --version=1.2.1 ; `
+    echo '*** Installing programs - DONE' ; 
 
-RUN pip install win-unicode-console
+RUN python -m pip install --quiet --upgrade pip; `
+    python -m pip install win-unicode-console --quiet --upgrade --force-reinstall --no-cache; `
+    python -m pip install conan --quiet --upgrade --force-reinstall --no-cache; `
+    python -m pip install conan_package_tools --quiet --upgrade --force-reinstall --no-cache
 
-RUN pip install `
-    cmake `
-    conan `
-    conan_package_tools `
-    --upgrade --force-reinstall --no-cache
- 
-WORKDIR "C:\Users\ContainerAdministrator"
+WORKDIR "C:/Users/ContainerAdministrator"
+ENTRYPOINT ["cmd.exe", "C:\Program Files (x86)\Microsoft Visual C++ Build Tools\vcbuildtools_msbuild.bat"]
+
+# # Docker Image for Build Server (x86)
+# FROM microsoft/windowsservercore:1803
+#
+# ADD https://aka.ms/vs/15/release/vs_buildtools.exe C:\TEMP\buildtools.exe
+#
+# RUN C:\TEMP\buildtools.exe --quiet --wait --norestart --nocache `
+#     --installPath C:\BuildTools `
+#     --add Microsoft.VisualStudio.Workload.VCTools;includeRecommended  ` 
+#     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ` 
+#     --add Microsoft.VisualStudio.Component.Windows10SDK.17134 `
+#     --add Microsoft.VisualStudio.Component.Windows10SDK.16299.Desktop `
+#     --add Microsoft.VisualStudio.Component.VC.140 ` 
+#     --add Microsoft.VisualStudio.Component.VC.ATL ` 
+#     --add Microsoft.VisualStudio.Component.VC.ATLMFC ` 
+#     --add Microsoft.VisualStudio.Component.VC.CLI.Support ` 
+#   || IF "%ERRORLEVEL%"=="3010" EXIT 0
+#   
+# SHELL ["powershell.exe", "-ExecutionPolicy", "Bypass", "-Command"]
+#
+# ENV chocolateyUseWindowsCompression=false
+#
+# RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+#
+# RUN choco install --yes python3 --params '"/InstallDir:C:\tools\python3"'
+#
+# RUN pip install win-unicode-console
+#
+# RUN pip install `
+#     cmake `
+#     conan `
+#     conan_package_tools `
+#     --upgrade --force-reinstall --no-cache
+#  
+# WORKDIR "C:\Users\ContainerAdministrator"
 
 
 
