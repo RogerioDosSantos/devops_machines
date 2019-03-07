@@ -28,6 +28,7 @@ RUN choco install --yes python3 --params '"/InstallDir:C:\tools\python3"'
 RUN pip install win-unicode-console
 
 RUN pip install `
+    cmake `
     conan `
     conan_package_tools `
     --upgrade --force-reinstall --no-cache
