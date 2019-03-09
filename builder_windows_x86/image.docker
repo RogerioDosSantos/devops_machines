@@ -33,9 +33,9 @@ ADD ${ZSCALE_CERTIFICATE_URL} C:\TEMP\zscale.crt
 RUN $ErrorActionPreference = 'Stop'; `
     echo '*** Installing Certificates' ; `
     echo ' - Proxy Configuration' ; `
-    Get-ChildItem Env:HTTP_PROXY ; `
-    Get-ChildItem Env:HTTPS_PROXY ; `
-    Get-ChildItem Env:NO_PROXY ; `
+    Get-ChildItem Env:HTTP_PROXY -ErrorAction Ignore ; `
+    Get-ChildItem Env:HTTPS_PROXY -ErrorAction Ignore ; `
+    Get-ChildItem Env:NO_PROXY -ErrorAction Ignore ; `
     echo ' - ZScale' ; `
     Import-Certificate -FilePath C:\TEMP\zscale.crt -CertStoreLocation Cert:\LocalMachine\Root -Verbose ; `
     echo '*** Installing Certificates - DONE' ; 
@@ -59,13 +59,14 @@ RUN $ErrorActionPreference = 'Stop'; `
     choco install --no-progress --yes visualstudio2017-workload-vctools --version=1.3.1 ; `
     choco install --no-progress --yes --execution-timeout=0 visualstudio2017-workload-manageddesktop --version=1.2.1 ; `
     echo ' - Conan' ; `
-    python -m pip install --quiet --upgrade pip; `
-    python -m pip install win-unicode-console --quiet --upgrade --force-reinstall --no-cache; `
-    python -m pip install conan --quiet --upgrade --force-reinstall --no-cache; `
-    python -m pip install conan_package_tools --quiet --upgrade --force-reinstall --no-cache
+    python -m pip install --quiet --upgrade pip ; `
+    python -m pip install win-unicode-console --quiet --upgrade --force-reinstall --no-cache ; `
+    python -m pip install conan --quiet --upgrade --force-reinstall --no-cache ; `
+    python -m pip install conan_package_tools --quiet --upgrade --force-reinstall --no-cache ; `
     echo '*** Installing programs - DONE' ; 
 
-# Configure Programs
+# Configure Conan
+ENV PYTHONWARNINGS="ignore:Unverified HTTPS request"
 RUN $ErrorActionPreference = 'Stop'; `
     echo '*** Configuring Conan' ; `
     echo ' - Remotes' ; `
