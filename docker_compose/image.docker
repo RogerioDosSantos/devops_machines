@@ -1,0 +1,30 @@
+# Docker Compose Image (alpine)
+
+FROM alpine:3.8
+
+USER root
+
+# Build Arguments
+ARG maintainer="Roger Santos (https://github.com/RogerioDosSantos)"
+ARG uri="docker_compose/0.0.1@rogersantos/alpine"
+ARG docker_image="rogersantos/docker_compose:alpine"
+ARG flavor="Release"
+
+# Identification
+LABEL maintainer="${maintainer}"
+LABEL uri="${uri}"
+LABEL docker_image="${docker_image}"
+LABEL flavor="${flavor}"
+LABEL description="Builder Linux x86 gcc6"
+
+# Install Docker Compose
+# COPY --from=library/docker:18.09 /usr/local/bin/docker /usr/bin/docker
+# COPY --from=docker/compose:1.23.2 /usr/local/bin/docker-compose /usr/bin/docker-compose
+RUN echo "*** Install Docker Compose - Start" \
+    && apk update \
+    && apk -y install \
+      pip \
+    && pip install docker-compose \
+    && echo "*** Install Docker Compose - End"
+
+WORKDIR workspace

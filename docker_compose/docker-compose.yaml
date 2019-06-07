@@ -1,0 +1,18 @@
+
+version: "3"
+services:
+
+  builder:
+    build:
+      context: ./
+      dockerfile: ./image.docker
+    image: "rogersantos/docker_compose:alpine"
+    stdin_open: true
+    tty: true
+    volumes:
+      - "C:\\Users\\roger.santos\\git\\roger\\devops\\machines\\docker_compose:/workspace/temp"
+
+  # builder_latest:
+  #   extends: builder
+  #   image: "rogersantos/builder:linux_x86"
+      
