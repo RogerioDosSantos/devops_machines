@@ -1,0 +1,18 @@
+version: "3"
+
+services: 
+
+  # http://localhost:8001
+  keycloak_oidc_server:
+    build:
+      context: ./
+      dockerfile: ./build_keycloak_oidc_server_linux.docker
+    image: "rogersantos/keycloak_oidc_server:linux"
+    environment:
+      - KEYCLOAK_SERVER=http://keycloak_oidc_server:8080
+      - KEYCLOAK_USER=user
+      - KEYCLOAK_PASSWORD=password
+    stdin_open: true
+    tty: true
+    ports:
+      - "8001:8080"
