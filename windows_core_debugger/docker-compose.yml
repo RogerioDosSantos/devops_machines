@@ -6,20 +6,22 @@
 version: "3"
 services:
 
-  # os_stage:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./stage.docker
-  #   image: "windows_core_debugger_stage:windows"
-  #   entrypoint: "powershell"
-  #   stdin_open: true
-  #   tty: true
+  stage:
+    build:
+      context: ./
+      dockerfile: ./stage.docker
+    image: "windows_core_debugger_stage:windows"
+    entrypoint: "powershell"
+    stdin_open: true
+    tty: true
 
   windows_core_debugger:
     build:
       context: ./
       dockerfile: ./windows_core_debugger.docker
     image: "rogersantos/windows_core_debugger:windows"
+    depends_on:
+      - stage
     entrypoint: "powershell"
     stdin_open: true
     tty: true
