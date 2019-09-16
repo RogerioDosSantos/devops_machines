@@ -1,0 +1,28 @@
+# Operational System and programs
+
+FROM windows_core_debugger_stage:windows as stage
+
+FROM microsoft/nanoserver:1803
+
+# Build Arguments
+ARG maintainer="Roger Santos (https://github.com/RogerioDosSantos)"
+ARG uri="windows_core_debugger/1.0.0@rogersantos/windows_release"
+ARG docker_image="rogersantos/windows_core_debugger:windows"
+ARG flavor="Release"
+
+# Identification
+LABEL maintainer="${maintainer}"
+LABEL uri="${uri}"
+LABEL docker_image="${docker_image}"
+LABEL flavor="${flavor}"
+
+# Visual Studio (2019) Remote Tools
+COPY --from=stage ["C:/Program Files/Microsoft Visual Studio 16.0/Common7/IDE/Remote Debugger", "C:/workspace/vs_2019_remote_debugger"]
+
+# Visual Studio (2017) Remote Tools
+COPY --from=stage ["C:/Program Files/Microsoft Visual Studio 15.0/Common7/IDE/Remote Debugger", "C:/workspace/vs_2017_remote_debugger"]
+
+# Windows 10 Debuggers
+COPY --from=stage ["C:/Program Files (x86)/Windows Kits/10/Debuggers", "C:/workspace/windows_10_debuggers"]
+
+WORKDIR /workspace

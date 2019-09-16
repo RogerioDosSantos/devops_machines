@@ -3,9 +3,13 @@
 FROM microsoft/windowsservercore:1803 as build-staging
 WORKDIR /workspace
 
+# Visual Studio (2019) Remote Tools
+ADD https://github.com/RogerioDosSantos/devops_machines/releases/download/dependencies/remote_tools_vs2019_x64_16.0.29123.88.exe /workspace/setups/remote_tools_2019.exe
+RUN powershell -Command $ErrorActionPreference = 'Stop' ; \
+    Start-Process C:\workspace\setups\remote_tools_2019.exe -ArgumentList '/quiet' -Wait
+
 # Visual Studio (2017) Remote Tools
 ADD https://github.com/RogerioDosSantos/devops_machines/releases/download/dependencies/remote_tools_vs2017_15.0.28307.53.exe /workspace/setups/remote_tools.exe
-RUN C:\workspace\setups\remote_tools.exe /quiet
 RUN powershell -Command $ErrorActionPreference = 'Stop' ; \
     Start-Process C:\workspace\setups\remote_tools.exe -ArgumentList '/quiet' -Wait
 
