@@ -1,0 +1,28 @@
+
+version: "3"
+services:
+
+  # windowsservercore_1803:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./windows_servercore_1803.docker
+  #   image: "rogersantos/edge_moby_test:windows_servercore_1803"
+  #   stdin_open: true
+  #   tty: true
+
+  # windowsnano_1803:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./windows_nanoserver_1803.docker
+  #   image: "rogersantos/edge_moby_test:windows_nano_1803"
+  #   stdin_open: true
+  #   tty: true
+
+  windowsnano_1809:
+    build:
+      context: ./
+      dockerfile: ./windows_nanoserver_1809.docker
+    image: "rogersantos/edge_moby_test:windows_nano_1809"
+    stdin_open: true
+    tty: true
+

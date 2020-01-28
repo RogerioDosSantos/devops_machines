@@ -1,0 +1,7 @@
+
+# Docker Image for Build Server (x86)
+FROM microsoft/windowsservercore:1803
+
+# Shell
+ENTRYPOINT ["powershell"]
+
